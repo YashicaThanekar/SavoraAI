@@ -3,7 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 import json
-from groq import Groq
+import requests
 
 # Load environment variables
 load_dotenv(override=True)
@@ -12,60 +12,116 @@ load_dotenv(override=True)
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
-# Configure Groq API
-api_key = os.getenv('GROQ_API_KEY')
+# Configure OpenRouter API for Gemma
+api_key = os.getenv('OPENROUTER_API_KEY')
 if not api_key:
-    print("WARNING: GROQ_API_KEY not found in environment variables!")
+    print("WARNING: OPENROUTER_API_KEY not found in environment variables!")
 else:
-    print(f"GROQ_API_KEY loaded successfully (starts with: {api_key[:10]}...)")
+    print(f"OPENROUTER_API_KEY loaded successfully (starts with: {api_key[:10]}...)")
 
-# Initialize Groq client
-client = Groq(api_key=api_key)
-MODEL = "llama-3.1-8b-instant"  # Fast and free model
+# OpenRouter API configuration
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+MODEL = "google/gemma-2-9b-it"  # Google Gemma model via OpenRouter
+APP_NAME = "SavoraAI"
+
+def generate_fallback_response(prompt):
+    """Generate a fallback response when OpenRouter API fails"""
+    if "recipe" in prompt.lower():
+        return '''{
+    "title": "Simple Recipe",
+    "description": "A basic recipe generated when AI is unavailable",
+    "prepTime": "15 mins",
+    "cookTime": "30 mins", 
+    "totalTime": "45 mins",
+    "difficulty": "Easy",
+    "servings": "2-3 people",
+    "cuisine": "Any",
+    "ingredients": [
+        "Available ingredients as specified",
+        "Basic seasonings (salt, pepper)",
+        "Cooking oil or butter"
+    ],
+    "instructions": [
+        "Prepare all ingredients",
+        "Cook according to basic methods",
+        "Season to taste",
+        "Serve hot"
+    ],
+    "tips": [
+        "Adjust seasoning to your preference",
+        "Feel free to substitute ingredients"
+    ],
+    "nutrition": {
+        "calories": "300-400 per serving",
+        "protein": "20-25g",
+        "carbs": "30-40g",
+        "fat": "10-15g"
+    }
+}'''
+    else:
+        return "I'm currently unable to access the AI service. Please try again later or check your connection."
 
 def generate_completion(prompt, temperature=0.7, max_tokens=2000):
-    """Helper function to generate completion from Groq API"""
+    """Helper function to generate completion from OpenRouter API using Gemma"""
     try:
         if not api_key:
-            raise Exception("GROQ_API_KEY is not set in .env file. Please add your Groq API key.")
+            print("OpenRouter API key not configured, using fallback response")
+            return generate_fallback_response(prompt)
         
-        print(f"\n=== Groq Request ===")
+        print(f"\n=== OpenRouter Request ===")
         print(f"Model: {MODEL}")
         print(f"Temperature: {temperature}")
         print(f"Max tokens: {max_tokens}")
         
-        # Generate content using Groq
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
+        # Prepare headers
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "HTTP-Referer": "https://savoraai.com",  # Replace with your actual domain
+            "X-Title": APP_NAME,
+            "Content-Type": "application/json"
+        }
         
-        response_text = response.choices[0].message.content
+        # Prepare request data
+        data = {
+            "model": MODEL,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+        
+        # Make API request to OpenRouter with timeout
+        response = requests.post(OPENROUTER_URL, headers=headers, json=data, timeout=30)
+        
+        if response.status_code != 200:
+            print(f"OpenRouter API error: {response.status_code} - {response.text}")
+            return generate_fallback_response(prompt)
+        
+        response_data = response.json()
+        response_text = response_data['choices'][0]['message']['content']
+        
         if not response_text:
-            raise Exception("Groq API returned empty response")
+            print("OpenRouter API returned empty response")
+            return generate_fallback_response(prompt)
         
-        print(f"\n=== Groq Response ===")
+        print(f"\n=== OpenRouter Response ===")
         print(f"Status: Success")
         print(f"Response: {response_text[:500]}...")
         
         return response_text
     except Exception as e:
-        print(f"Groq API error details: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        raise Exception(f"Groq API error: {str(e)}")
+        print(f"OpenRouter API error details: {str(e)}")
+        print("Using fallback response...")
+        return generate_fallback_response(prompt)
 
 @app.route('/', methods=['GET'])
 def home():
     """Home endpoint"""
     return jsonify({
-        'message': 'Welcome to SAVORA AI Backend API - Powered by Groq',
+        'message': 'Welcome to SAVORA AI Backend API - Powered by Google Gemma via OpenRouter',
         'status': 'running',
         'model': MODEL,
-        'api_provider': 'Groq',
-        'api_provider': 'Google Generative AI',
+        'api_provider': 'OpenRouter',
+        'ai_model': 'Google Gemma 2 9B',
         'endpoints': {
             '/generate': 'POST - Generate recipe from ingredients',
             '/chat': 'POST - Chat with recipe assistant',
@@ -457,4 +513,9 @@ def health_check():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    print("🚀 Starting SavoraAI Backend with Google Gemma...")
+    print(f"📡 API Provider: OpenRouter")
+    print(f"🤖 AI Model: {MODEL}")
+    print(f"🔑 API Key configured: {api_key is not None}")
+    print("🌐 Server will be available at: http://localhost:5000")
+    app.run(host='0.0.0.0', port=5000, debug=False)
