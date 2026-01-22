@@ -32,7 +32,7 @@ Savora AI is an intelligent recipe generation platform that helps users cook sma
 
 ---
 
-## 📁 Project Structure
+## **Project Structure**
 
 ```
 SavoraAI/
@@ -66,7 +66,7 @@ SavoraAI/
 
 ---
 
-## ✨ Features Implemented
+## **Features Implemented**
 
 ### Core Features
 ✅ AI-generated dynamic recipes  
@@ -75,7 +75,7 @@ SavoraAI/
 ✅ History of previously generated recipes  
 ✅ Save favorite recipes  
 
-### Smart Features
+### **Smart Features**
 ✅ Multi-cuisine support (Indian, Chinese, Continental, Italian, Mexican, Thai)  
 ✅ Estimated cooking time  
 ✅ Portion-based recipe generation (1 person / 2-3 / 4-6 / Family)  
@@ -83,7 +83,7 @@ SavoraAI/
 ✅ AI Chatbot for follow-up cooking questions  
 ✅ Voice assistant input (browser speech-to-text)  
 
-### Filter Features
+### **Filter Features**
 ✅ Taste filters: Sweet / Savory / Spicy  
 ✅ Meal type filters: Breakfast / Lunch / Dinner / Snack  
 ✅ Cuisine filters: Multiple cuisines  
@@ -91,7 +91,7 @@ SavoraAI/
 
 ---
 
-## 🎯 How to Use
+## **How to Use**
 
 1. **Login/Register**: Create an account or login with Google
 2. **Enter Ingredients**: Type or speak ingredients you have
