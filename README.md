@@ -1,62 +1,34 @@
-# 🍳 SAVORA AI - Setup Guide
+                                              🍳 Savora AI – AI-Powered Smart Recipe Generator
 
 
-
----
-
-
-### 1️⃣ Backend Setup
-
-```bash
-# Navigate to backend folder
-cd backend
-
-# Create virtual environment (Windows)
-python -m venv venv
-venv\Scripts\activate
-
-# Create virtual environment (Mac/Linux)
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Create .env file
-# Copy .env.example to .env and add your Gemini API key
-GEMINI_API_KEY=your_actual_api_key_here
-
-
+Savora AI is an intelligent recipe generation platform that helps users cook smarter using AI. It generates personalized recipes based on available ingredients, cuisine preferences, portion size, and taste using Google Gemini, Firebase, and a modern full-stack architecture.
 
 ---
 
-## 🔑 Getting API Keys
+## **Key Highlights**
+- AI-powered recipe generation
+- Ingredient-based smart cooking
+- Voice input support
+- AI cooking chatbot
+- Firebase authentication and storage
+- Scalable full-stack design
 
-### Google Gemini API Key
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Click "Get API Key"
-3. Copy the key and paste it in `backend/.env`
+---
 
-### Firebase Configuration
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project
-3. Enable Authentication (Email/Password + Google)
-4. Create Firestore Database
-5. Go to Project Settings → Add Web App
-6. Copy the config object
-7. Paste it in `frontend/src/firebase.js`
+##  **Tech Stack**
 
-Example Firebase config:
-```javascript
-const firebaseConfig = {
-  apiKey: "AIza...",
-  authDomain: "your-app.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-app.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abc..."
-};
-```
+### Frontend
+- React (Vite)
+- HTML, CSS, JavaScript
+- Firebase Authentication
+- Firebase Firestore
+
+### Backend
+- Python
+- Flask
+- Google Gemini API
+- Flask-CORS
+- dotenv
 
 ---
 
@@ -131,126 +103,3 @@ SavoraAI/
 8. **View History**: Access your previously generated recipes
 
 ---
-
-## 🐛 Troubleshooting
-
-### Backend won't start
-- Make sure virtual environment is activated
-- Check if port 5000 is available
-- Verify Gemini API key in .env file
-
-### Frontend won't start
-- Run `npm install` again
-- Delete `node_modules` and run `npm install`
-- Check if port 3000 is available
-
-### Firebase errors
-- Verify Firebase config in firebase.js
-- Enable Authentication methods in Firebase Console
-- Check Firestore rules allow read/write
-
-### CORS errors
-- Make sure Flask backend is running
-- Check flask-cors is installed
-- Verify backend URL in frontend (localhost:5000)
-
----
-
-## 📝 API Endpoints
-
-### POST /generate
-Generate a recipe based on ingredients and filters
-
-**Request Body:**
-```json
-{
-  "ingredients": ["chicken", "rice", "tomatoes"],
-  "cuisine": "Indian",
-  "taste": "Spicy",
-  "mealType": "Dinner",
-  "portion": "2-3 people"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "recipe": "Formatted recipe text..."
-}
-```
-
-### POST /chat
-Ask follow-up cooking questions
-
-**Request Body:**
-```json
-{
-  "question": "Can I substitute chicken with paneer?",
-  "recipeContext": "Full recipe text..."
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "answer": "Yes, you can substitute..."
-}
-```
-
-### POST /rescue
-Rescue a failed recipe (bonus endpoint)
-
-**Request Body:**
-```json
-{
-  "problem": "My curry is too salty",
-  "dishType": "Chicken Curry"
-}
-```
-
----
-
-
-
-```
-
-### Modify AI Prompts
-Edit `backend/app.py` to customize how Gemini generates recipes
-
----
-
-## 🚀 Deployment Tips
-
-### Deploy Backend (Render/Railway)
-1. Push code to GitHub
-2. Connect repository
-3. Add GEMINI_API_KEY environment variable
-4. Deploy
-
-### Deploy Frontend (Vercel/Netlify)
-1. Push code to GitHub
-2. Connect repository
-3. Add Firebase config as environment variables
-4. Set build command: `npm run build`
-5. Set publish directory: `dist`
-6. Deploy
-
----
-
-## 📧 Support
-
-If you encounter any issues:
-1. Check the troubleshooting section
-2. Verify all API keys are correct
-3. Ensure both backend and frontend are running
-4. Check browser console for errors
-
----
-
-## 🎉 You're Ready!
-
-Start the backend, start the frontend, and start cooking with AI! 🍳✨
-
-**Happy Hacking! 🚀**
